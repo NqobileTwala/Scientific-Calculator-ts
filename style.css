@@ -51,16 +51,15 @@ button:hover {
 button:active {
   background: #999;
 }
-/* Clear button styles */
+
 .buttons button:nth-child(1) {
-  background: #ff6666; /* Red background */
-  color: #fff; /* White text */
+  background: #ff6666; 
+  color: #fff; 
 }
 
-/* Enter button styles */
 .buttons button:nth-child(3) {
-  background: #66cc66; /* Green background */
-  color: #fff; /* White text */
+  background: #66cc66; 
+  color: #fff; 
 }
 
 @media (max-width: 400px) {
