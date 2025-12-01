@@ -1,5 +1,5 @@
-const display = document.getElementById("display");
-let resetOnNextNumber = false;
+var display = document.getElementById("display");
+var resetOnNextNumber = false;
 function clearDisplay() {
     display.value = "0";
     resetOnNextNumber = false;
@@ -34,42 +34,28 @@ function toggleSign() {
 }
 function calculate() {
     try {
-        let expression = display.value;
-        let result = parseSimpleMath(expression);
-        display.value = result.toString();
+        var expression = display.value;
+        expression = expression.replace(/(\d)(\()/g, "$1*$2");
+        expression = expression
+            .replace(/sqrt\(/g, "Math.sqrt(")
+            .replace(/ln\(/g, "Math.log(")
+            .replace(/exp\(/g, "Math.exp(")
+            .replace(/cos\(/g, "Math.cos(")
+            .replace(/sin\(/g, "Math.sin(")
+            .replace(/tan\(/g, "Math.tan(")
+            .replace(/sq\(/g, "Math.pow(");
+        var openParentheses = (expression.match(/\(/g) || []).length;
+        var closeParentheses = (expression.match(/\)/g) || []).length;
+        if (openParentheses > closeParentheses) {
+            expression += ")".repeat(openParentheses - closeParentheses);
+        }
+        display.value = Function('"use strict"; return (' + expression + ")")();
         resetOnNextNumber = true;
     }
     catch (error) {
         display.value = "Error";
         resetOnNextNumber = true;
     }
-}
-function parseSimpleMath(expr) {
-    expr = expr.replace(/\s/g, '');
-    expr = expr.replace(/(\d+)\(/g, '$1*(');
-    let tokens = expr.match(/[\d.]+|[+\-*/()]/g) || [];
-    if (tokens.length === 0)
-        return 0;
-    let result = parseFloat(tokens[0]) || 0;
-    for (let i = 1; i < tokens.length - 1; i += 2) {
-        let op = tokens[i];
-        let next = parseFloat(tokens[i + 1]) || 0;
-        switch (op) {
-            case '+':
-                result += next;
-                break;
-            case '-':
-                result -= next;
-                break;
-            case '*':
-                result *= next;
-                break;
-            case '/':
-                result /= next;
-                break;
-        }
-    }
-    return result;
 }
 window.clearDisplay = clearDisplay;
 window.backspace = backspace;

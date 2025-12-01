@@ -1,16 +1,16 @@
-const display: HTMLInputElement = document.getElementById("display") as HTMLInputElement;
-let resetOnNextNumber: boolean = false;
+let display = document.getElementById("display") as HTMLInputElement;
+let resetOnNextNumber = false as boolean;
 
-function clearDisplay(): void {
+function clearDisplay() {
   display.value = "0";
   resetOnNextNumber = false;
 }
 
-function backspace(): void {
+function backspace() {
   display.value = display.value.slice(0, -1) || "0";
 }
 
-function insert(value: string): void {
+function insert(value: string) {
   if (resetOnNextNumber && !isNaN(parseFloat(value))) {
     display.value = "";
     resetOnNextNumber = false;
@@ -26,7 +26,7 @@ function insert(value: string): void {
   }
 }
 
-function toggleSign(): void {
+function toggleSign() {
   if (display.value.startsWith("-")) {
     display.value = display.value.slice(1);
   } else {
@@ -34,39 +34,32 @@ function toggleSign(): void {
   }
 }
 
-function calculate(): void {
+function calculate() {
   try {
-    let expression: string = display.value;
-    let result: number = parseSimpleMath(expression);
-    display.value = result.toString();
+    let expression = display.value;
+    
+    expression = expression.replace(/(\d)(\()/g, "$1*$2");
+    expression = expression
+      .replace(/sqrt\(/g, "Math.sqrt(")
+      .replace(/ln\(/g, "Math.log(")
+      .replace(/exp\(/g, "Math.exp(")
+      .replace(/cos\(/g, "Math.cos(")
+      .replace(/sin\(/g, "Math.sin(")
+      .replace(/tan\(/g, "Math.tan(")
+      .replace(/sq\(/g, "Math.pow(");
+    
+    let openParentheses = (expression.match(/\(/g) || []).length;
+    let closeParentheses = (expression.match(/\)/g) || []).length;
+    if (openParentheses > closeParentheses) {
+      expression += ")".repeat(openParentheses - closeParentheses);
+    }
+    
+    display.value = Function('"use strict"; return (' + expression + ")")();
     resetOnNextNumber = true;
   } catch (error) {
     display.value = "Error";
     resetOnNextNumber = true;
   }
-}
-
-function parseSimpleMath(expr: string): number {
-  expr = expr.replace(/\s/g, '');
-  expr = expr.replace(/(\d+)\(/g, '$1*(');
-  
-  let tokens: string[] = expr.match(/[\d.]+|[+\-*/()]/g) || [];
-  if (tokens.length === 0) return 0;
-  
-  let result: number = parseFloat(tokens[0]) || 0;
-  
-  for (let i = 1; i < tokens.length - 1; i += 2) {
-    let op: string = tokens[i];
-    let next: number = parseFloat(tokens[i + 1]) || 0;
-    
-    switch (op) {
-      case '+': result += next; break;
-      case '-': result -= next; break;
-      case '*': result *= next; break;
-      case '/': result /= next; break;
-    }
-  }
-  return result;
 }
 
 (window as any).clearDisplay = clearDisplay;
