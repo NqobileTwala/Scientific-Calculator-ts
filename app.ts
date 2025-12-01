@@ -69,7 +69,6 @@ function parseSimpleMath(expr: string): number {
   return result;
 }
 
-// ✅ THIS MAKES BUTTONS WORK - NO declare global NEEDED
 (window as any).clearDisplay = clearDisplay;
 (window as any).backspace = backspace;
 (window as any).insert = insert;
