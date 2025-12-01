@@ -68,3 +68,9 @@ function parseSimpleMath(expr: string): number {
   }
   return result;
 }
+
+(window as any).clearDisplay = clearDisplay;
+(window as any).backspace = backspace;
+(window as any).insert = insert;
+(window as any).toggleSign = toggleSign;
+(window as any).calculate = calculate;
